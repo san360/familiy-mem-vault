@@ -125,3 +125,101 @@ def test_update_nonexistent_memory():
 def test_delete_nonexistent_memory():
     response = client.delete("/api/memories/99999")
     assert response.status_code == 404
+
+def test_filter_memories_by_tags():
+    # Create test memories with different tags
+    memories = [
+        {
+            "title": "Family Vacation",
+            "description": "Trip to the beach",
+            "date": "2024-06-15",
+            "tags": ["family", "vacation", "beach"],
+            "location": "Beach Resort"
+        },
+        {
+            "title": "Birthday Party",
+            "description": "John's birthday",
+            "date": "2024-07-20",
+            "tags": ["birthday", "celebration"],
+            "location": "Home"
+        },
+        {
+            "title": "Work Conference",
+            "description": "Annual work meeting",
+            "date": "2024-08-10",
+            "tags": ["work", "conference"],
+            "location": "Office"
+        }
+    ]
+    
+    # Create the memories
+    for memory in memories:
+        client.post("/api/memories", json=memory)
+    
+    # Test filtering by single tag
+    response = client.get("/api/memories?tags=family")
+    assert response.status_code == 200
+    data = response.json()
+    filtered_memories = data["memories"]
+    assert len([m for m in filtered_memories if "family" in m.get("tags", [])]) > 0
+    
+    # Test filtering by multiple tags (OR logic)
+    response = client.get("/api/memories?tags=birthday&tags=vacation")
+    assert response.status_code == 200
+    data = response.json()
+    filtered_memories = data["memories"]
+    assert len([m for m in filtered_memories if any(tag in m.get("tags", []) for tag in ["birthday", "vacation"])]) > 0
+
+def test_filter_memories_by_location():
+    # Test location filtering (case-insensitive substring search)
+    response = client.get("/api/memories?location=home")
+    assert response.status_code == 200
+    data = response.json()
+    filtered_memories = data["memories"]
+    for memory in filtered_memories:
+        assert "home" in memory.get("location", "").lower()
+    
+    # Test location filtering with partial match
+    response = client.get("/api/memories?location=Beach")
+    assert response.status_code == 200
+    data = response.json()
+    filtered_memories = data["memories"]
+    for memory in filtered_memories:
+        assert "beach" in memory.get("location", "").lower()
+
+def test_filter_memories_by_date_range():
+    # Test date filtering
+    response = client.get("/api/memories?date_from=2024-07-01")
+    assert response.status_code == 200
+    data = response.json()
+    filtered_memories = data["memories"]
+    for memory in filtered_memories:
+        assert memory["date"] >= "2024-07-01"
+    
+    # Test date range filtering
+    response = client.get("/api/memories?date_from=2024-06-01&date_to=2024-07-31")
+    assert response.status_code == 200
+    data = response.json()
+    filtered_memories = data["memories"]
+    for memory in filtered_memories:
+        assert "2024-06-01" <= memory["date"] <= "2024-07-31"
+
+def test_filter_memories_invalid_date():
+    # Test invalid date format
+    response = client.get("/api/memories?date_from=invalid-date")
+    assert response.status_code == 400
+    
+    response = client.get("/api/memories?date_to=invalid-date")
+    assert response.status_code == 400
+
+def test_filter_memories_combined():
+    # Test combining multiple filters
+    response = client.get("/api/memories?tags=family&location=beach&date_from=2024-06-01")
+    assert response.status_code == 200
+    data = response.json()
+    filtered_memories = data["memories"]
+    for memory in filtered_memories:
+        # Should match all criteria
+        assert "family" in memory.get("tags", [])
+        assert "beach" in memory.get("location", "").lower()
+        assert memory["date"] >= "2024-06-01"

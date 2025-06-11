@@ -1,10 +1,11 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 import os
 import json
 from pathlib import Path
+from datetime import datetime
 
 app = FastAPI(
     title="Family Memory Vault API",
@@ -75,9 +76,37 @@ async def health_check():
     return {"status": "healthy", "service": "family-memory-vault-api"}
 
 @app.get("/api/memories")
-async def get_memories():
+async def get_memories(
+    tags: Optional[List[str]] = Query(None, description="Filter by tags"),
+    location: Optional[str] = Query(None, description="Filter by location keyword"),
+    date_from: Optional[str] = Query(None, description="Filter by start date (YYYY-MM-DD)"),
+    date_to: Optional[str] = Query(None, description="Filter by end date (YYYY-MM-DD)")
+):
     data = load_memories()
-    return data
+    memories = data["memories"]
+    
+    # Apply filters
+    if tags:
+        memories = [m for m in memories if any(tag in m.get("tags", []) for tag in tags)]
+    
+    if location:
+        memories = [m for m in memories if location.lower() in m.get("location", "").lower()]
+    
+    if date_from:
+        try:
+            from_date = datetime.strptime(date_from, "%Y-%m-%d").date()
+            memories = [m for m in memories if datetime.strptime(m["date"], "%Y-%m-%d").date() >= from_date]
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid date_from format. Use YYYY-MM-DD")
+    
+    if date_to:
+        try:
+            to_date = datetime.strptime(date_to, "%Y-%m-%d").date()
+            memories = [m for m in memories if datetime.strptime(m["date"], "%Y-%m-%d").date() <= to_date]
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid date_to format. Use YYYY-MM-DD")
+    
+    return {"memories": memories}
 
 @app.get("/api/memories/{memory_id}")
 async def get_memory(memory_id: int):
