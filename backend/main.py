@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 import os
 import json
+import tempfile
 from pathlib import Path
 from datetime import datetime
 import re
@@ -50,17 +51,41 @@ class Memory(BaseModel):
 def load_memories():
     """Load memories from JSON file"""
     data_path = Path("../data/memories.json")
-    if data_path.exists():
+    if not data_path.exists():
+        return {"memories": []}
+    
+    try:
         with open(data_path, "r") as f:
-            return json.load(f)
-    return {"memories": []}
+            data = json.load(f)
+            # Validate structure
+            if not isinstance(data, dict) or "memories" not in data:
+                return {"memories": []}
+            if not isinstance(data["memories"], list):
+                return {"memories": []}
+            return data
+    except (json.JSONDecodeError, IOError):
+        # Handle malformed JSON or read errors by returning empty structure
+        return {"memories": []}
 
 def save_memories(data):
-    """Save memories to JSON file"""
+    """Save memories to JSON file with atomic write operation"""
     data_path = Path("../data/memories.json")
     data_path.parent.mkdir(exist_ok=True)
-    with open(data_path, "w") as f:
-        json.dump(data, f, indent=2)
+    
+    # Write to temporary file first, then atomically move to target
+    with tempfile.NamedTemporaryFile(
+        mode='w', 
+        dir=data_path.parent, 
+        delete=False,
+        suffix='.tmp'
+    ) as tmp_file:
+        json.dump(data, tmp_file, indent=2)
+        tmp_file.flush()
+        os.fsync(tmp_file.fileno())  # Ensure data is written to disk
+        temp_path = tmp_file.name
+    
+    # Atomically move temp file to target location
+    os.replace(temp_path, data_path)
 
 def get_next_id(memories):
     """Get next available ID"""
