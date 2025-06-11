@@ -1,0 +1,1 @@
+Analyze the file and create Github issues for each of the task in the sprint, for each of the issue in the title prefix with the sprint name and then issue title, Generate a preview for one and then create the issue, For creating issues consider GitHub repository https://github.com/san360/familiy-mem-vault
