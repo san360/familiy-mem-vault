@@ -361,3 +361,40 @@ def test_file_safe_atomic_writing():
         # Test that no temporary files are left behind
         temp_files = list(test_file_path.parent.glob("*.tmp"))
         assert len(temp_files) == 0
+
+
+def test_path_resolution_from_different_working_directory():
+    """Test that load_memories works correctly regardless of current working directory"""
+    import subprocess
+    import sys
+    
+    # Get the current working directory
+    original_cwd = os.getcwd()
+    
+    try:
+        # Test from project root directory (parent of backend)
+        project_root = Path(__file__).parent.parent.parent
+        os.chdir(project_root)
+        
+        # Load memories from different working directory
+        data = load_memories()
+        assert isinstance(data, dict)
+        assert "memories" in data
+        assert isinstance(data["memories"], list)
+        
+        # If the data file exists, we should get some memories
+        data_file = Path(__file__).parent.parent.parent / "data" / "memories.json"
+        if data_file.exists():
+            # Verify we can read actual data
+            assert len(data["memories"]) > 0
+            # Verify the first memory has the expected structure
+            if data["memories"]:
+                memory = data["memories"][0]
+                assert "id" in memory
+                assert "title" in memory
+                assert "description" in memory
+                assert "date" in memory
+                
+    finally:
+        # Always restore the original working directory
+        os.chdir(original_cwd)

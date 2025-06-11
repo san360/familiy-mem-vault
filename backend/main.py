@@ -64,7 +64,7 @@ class Memory(BaseModel):
 
 def load_memories():
     """Load memories from JSON file"""
-    data_path = Path("../data/memories.json")
+    data_path = Path(__file__).parent.parent / "data" / "memories.json"
     if not data_path.exists():
         return {"memories": []}
     
@@ -84,7 +84,7 @@ def load_memories():
 
 def save_memories(data):
     """Save memories to JSON file with atomic write operation"""
-    data_path = Path("../data/memories.json")
+    data_path = Path(__file__).parent.parent / "data" / "memories.json"
     data_path.parent.mkdir(exist_ok=True)
     
     # Write to temporary file first, then atomically move to target
