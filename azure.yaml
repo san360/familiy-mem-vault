@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: familiy-mem-vault
+metadata:
+  template: familiy-mem-vault@0.0.1-beta
+services:
+  api:
+    project: ./backend
+    host: containerapp
+    language: python
+  web:
+    project: ./frontend
+    host: containerapp
+    language: js
+hooks:
+  postdeploy:
+    shell: sh
+    run: echo "Deployment completed successfully!"
+    continueOnError: false

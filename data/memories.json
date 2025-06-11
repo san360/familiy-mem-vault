@@ -1,0 +1,22 @@
+{
+  "memories": [
+    {
+      "id": 1,
+      "title": "Family Vacation 2024",
+      "description": "Our amazing trip to the mountains with the whole family.",
+      "date": "2024-07-15",
+      "photos": [],
+      "tags": ["vacation", "family", "mountains"],
+      "location": "Rocky Mountains, Colorado"
+    },
+    {
+      "id": 2,
+      "title": "Birthday Celebration",
+      "description": "Mom's 60th birthday party with all the relatives.",
+      "date": "2024-03-22",
+      "photos": [],
+      "tags": ["birthday", "celebration", "family"],
+      "location": "Home"
+    }
+  ]
+}
