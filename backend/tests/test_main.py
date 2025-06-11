@@ -125,3 +125,50 @@ def test_update_nonexistent_memory():
 def test_delete_nonexistent_memory():
     response = client.delete("/api/memories/99999")
     assert response.status_code == 404
+
+def test_create_memory_validation():
+    """Test validation for memory creation"""
+    # Test empty title
+    response = client.post("/api/memories", json={
+        "title": "",
+        "description": "Valid description",
+        "date": "2024-01-01"
+    })
+    assert response.status_code == 422
+    
+    # Test empty description
+    response = client.post("/api/memories", json={
+        "title": "Valid title",
+        "description": "",
+        "date": "2024-01-01"
+    })
+    assert response.status_code == 422
+    
+    # Test invalid date format
+    response = client.post("/api/memories", json={
+        "title": "Valid title",
+        "description": "Valid description",
+        "date": "invalid-date"
+    })
+    assert response.status_code == 422
+    
+    # Test title too long
+    response = client.post("/api/memories", json={
+        "title": "x" * 201,
+        "description": "Valid description",
+        "date": "2024-01-01"
+    })
+    assert response.status_code == 422
+    
+    # Test valid data with all fields
+    response = client.post("/api/memories", json={
+        "title": "Valid Memory",
+        "description": "A valid memory description",
+        "date": "2024-01-01",
+        "tags": ["validation", "test"],
+        "location": "Test Location"
+    })
+    assert response.status_code == 200
+    memory = response.json()
+    assert memory["title"] == "Valid Memory"
+    assert memory["tags"] == ["validation", "test"]

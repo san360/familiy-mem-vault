@@ -1,10 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 import os
 import json
 from pathlib import Path
+import re
 
 app = FastAPI(
     title="Family Memory Vault API",
@@ -23,18 +24,18 @@ app.add_middleware(
 
 # Pydantic models
 class MemoryCreate(BaseModel):
-    title: str
-    description: str
-    date: str
-    tags: List[str] = []
-    location: str = ""
+    title: str = Field(..., min_length=1, max_length=200, description="Memory title")
+    description: str = Field(..., min_length=1, max_length=2000, description="Memory description")
+    date: str = Field(..., pattern=r'^\d{4}-\d{2}-\d{2}$', description="Date in YYYY-MM-DD format")
+    tags: List[str] = Field(default=[], description="List of tags")
+    location: str = Field(default="", max_length=200, description="Memory location")
 
 class MemoryUpdate(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    date: Optional[str] = None
-    tags: Optional[List[str]] = None
-    location: Optional[str] = None
+    title: Optional[str] = Field(None, min_length=1, max_length=200, description="Memory title")
+    description: Optional[str] = Field(None, min_length=1, max_length=2000, description="Memory description") 
+    date: Optional[str] = Field(None, pattern=r'^\d{4}-\d{2}-\d{2}$', description="Date in YYYY-MM-DD format")
+    tags: Optional[List[str]] = Field(None, description="List of tags")
+    location: Optional[str] = Field(None, max_length=200, description="Memory location")
 
 class Memory(BaseModel):
     id: int
