@@ -2,7 +2,7 @@
   "name": "Family Memory Vault",
   "dockerComposeFile": "../docker-compose.dev.yml",
   "service": "devcontainer",
-  "workspaceFolder": "/workspace",
+  "workspaceFolder": "/workspaces/familiy-mem-vault",
   "shutdownAction": "stopCompose",
   "customizations": {
     "vscode": {
@@ -15,7 +15,9 @@
         "ms-vscode.vscode-typescript-next",
         "ms-azuretools.vscode-azurefunctions",
         "ms-azuretools.vscode-docker",
-        "ms-vscode.azurecli"
+        "ms-vscode.azurecli",
+        "github.copilot",
+        "github.copilot-chat"
       ],
       "settings": {
         "python.defaultInterpreterPath": "/usr/local/bin/python",
@@ -28,9 +30,11 @@
     }
   },
   "forwardPorts": [3000, 8000],
-  "postCreateCommand": "pip install -r backend/requirements.txt && cd frontend && npm install",
+  "postCreateCommand": "cd backend && pip install -r requirements.txt && cd ../frontend && npm install",
   "remoteUser": "vscode",
   "features": {
+    // "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    // "ghcr.io/devcontainers/features/python:1": {"installPython": "3.11","installPip": true},
     "ghcr.io/devcontainers/features/node:1": {
       "version": "latest",
       "cache": "npm"
