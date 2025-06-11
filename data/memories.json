@@ -6,11 +6,7 @@
       "description": "Our amazing trip to the mountains with the whole family.",
       "date": "2024-07-15",
       "photos": [],
-      "tags": [
-        "vacation",
-        "family",
-        "mountains"
-      ],
+      "tags": ["vacation", "family", "mountains"],
       "location": "Rocky Mountains, Colorado"
     },
     {
@@ -19,11 +15,7 @@
       "description": "Mom's 60th birthday party with all the relatives.",
       "date": "2024-03-22",
       "photos": [],
-      "tags": [
-        "birthday",
-        "celebration",
-        "family"
-      ],
+      "tags": ["birthday", "celebration", "family"],
       "location": "Home"
     },
     {
@@ -32,10 +24,7 @@
       "description": "This is a test memory",
       "date": "2024-01-01",
       "photos": [],
-      "tags": [
-        "test",
-        "memory"
-      ],
+      "tags": ["test", "memory"],
       "location": "Test Location"
     },
     {
@@ -44,10 +33,7 @@
       "description": "Testing single memory retrieval",
       "date": "2024-01-02",
       "photos": [],
-      "tags": [
-        "single",
-        "test"
-      ],
+      "tags": ["single", "test"],
       "location": "Single Test Location"
     },
     {
@@ -56,10 +42,7 @@
       "description": "Updated description",
       "date": "2024-01-03",
       "photos": [],
-      "tags": [
-        "update",
-        "test"
-      ],
+      "tags": ["update", "test"],
       "location": "Original Location"
     },
     {
@@ -68,10 +51,7 @@
       "description": "This is a test memory",
       "date": "2024-01-01",
       "photos": [],
-      "tags": [
-        "test",
-        "memory"
-      ],
+      "tags": ["test", "memory"],
       "location": "Test Location"
     },
     {
@@ -80,10 +60,7 @@
       "description": "Testing single memory retrieval",
       "date": "2024-01-02",
       "photos": [],
-      "tags": [
-        "single",
-        "test"
-      ],
+      "tags": ["single", "test"],
       "location": "Single Test Location"
     },
     {
@@ -92,10 +69,7 @@
       "description": "Updated description",
       "date": "2024-01-03",
       "photos": [],
-      "tags": [
-        "update",
-        "test"
-      ],
+      "tags": ["update", "test"],
       "location": "Original Location"
     },
     {
@@ -104,10 +78,7 @@
       "description": "This is a test memory",
       "date": "2024-01-01",
       "photos": [],
-      "tags": [
-        "test",
-        "memory"
-      ],
+      "tags": ["test", "memory"],
       "location": "Test Location"
     },
     {
@@ -116,10 +87,7 @@
       "description": "Testing single memory retrieval",
       "date": "2024-01-02",
       "photos": [],
-      "tags": [
-        "single",
-        "test"
-      ],
+      "tags": ["single", "test"],
       "location": "Single Test Location"
     },
     {
@@ -128,10 +96,7 @@
       "description": "Updated description",
       "date": "2024-01-03",
       "photos": [],
-      "tags": [
-        "update",
-        "test"
-      ],
+      "tags": ["update", "test"],
       "location": "Original Location"
     },
     {
@@ -140,146 +105,10 @@
       "description": "Trip to the beach",
       "date": "2024-06-15",
       "photos": [],
-      "tags": [
-        "family",
-        "vacation",
-        "beach"
-      ],
+      "tags": ["family", "vacation", "beach"],
       "location": "Beach Resort"
     },
     {
       "id": 13,
       "title": "Birthday Party",
-      "description": "John's birthday",
-      "date": "2024-07-20",
-      "photos": [],
-      "tags": [
-        "birthday",
-        "celebration"
-      ],
-      "location": "Home"
-    },
-    {
-      "id": 14,
-      "title": "Work Conference",
-      "description": "Annual work meeting",
-      "date": "2024-08-10",
-      "photos": [],
-      "tags": [
-        "work",
-        "conference"
-      ],
-      "location": "Office"
-    },
-    {
-      "id": 15,
-      "title": "Family Vacation",
-      "description": "Trip to the beach",
-      "date": "2024-06-15",
-      "photos": [],
-      "tags": [
-        "family",
-        "vacation",
-        "beach"
-      ],
-      "location": "Beach Resort"
-    },
-    {
-      "id": 16,
-      "title": "Birthday Party",
-      "description": "John's birthday",
-      "date": "2024-07-20",
-      "photos": [],
-      "tags": [
-        "birthday",
-        "celebration"
-      ],
-      "location": "Home"
-    },
-    {
-      "id": 17,
-      "title": "Work Conference",
-      "description": "Annual work meeting",
-      "date": "2024-08-10",
-      "photos": [],
-      "tags": [
-        "work",
-        "conference"
-      ],
-      "location": "Office"
-    },
-    {
-      "id": 18,
-      "title": "Test Memory",
-      "description": "This is a test memory",
-      "date": "2024-01-01",
-      "photos": [],
-      "tags": [
-        "test",
-        "memory"
-      ],
-      "location": "Test Location"
-    },
-    {
-      "id": 19,
-      "title": "Single Test Memory",
-      "description": "Testing single memory retrieval",
-      "date": "2024-01-02",
-      "photos": [],
-      "tags": [
-        "single",
-        "test"
-      ],
-      "location": "Single Test Location"
-    },
-    {
-      "id": 20,
-      "title": "Updated Memory Title",
-      "description": "Updated description",
-      "date": "2024-01-03",
-      "photos": [],
-      "tags": [
-        "update",
-        "test"
-      ],
-      "location": "Original Location"
-    },
-    {
-      "id": 21,
-      "title": "Family Vacation",
-      "description": "Trip to the beach",
-      "date": "2024-06-15",
-      "photos": [],
-      "tags": [
-        "family",
-        "vacation",
-        "beach"
-      ],
-      "location": "Beach Resort"
-    },
-    {
-      "id": 22,
-      "title": "Birthday Party",
-      "description": "John's birthday",
-      "date": "2024-07-20",
-      "photos": [],
-      "tags": [
-        "birthday",
-        "celebration"
-      ],
-      "location": "Home"
-    },
-    {
-      "id": 23,
-      "title": "Work Conference",
-      "description": "Annual work meeting",
-      "date": "2024-08-10",
-      "photos": [],
-      "tags": [
-        "work",
-        "conference"
-      ],
-      "location": "Office"
-    }
-  ]
-}
+      "description ​:contentReference[oaicite:0]{index=0}​
