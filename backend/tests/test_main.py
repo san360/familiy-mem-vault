@@ -1,8 +1,5 @@
 from fastapi.testclient import TestClient
 from main import app
-import json
-import tempfile
-import os
 
 client = TestClient(app)
 
@@ -42,7 +39,6 @@ def test_create_memory():
     assert "id" in created_memory
 
 def test_get_single_memory():
-    # First create a memory
     memory_data = {
         "title": "Single Test Memory",
         "description": "Testing single memory retrieval",
@@ -51,18 +47,15 @@ def test_get_single_memory():
         "location": "Single Test Location"
     }
     create_response = client.post("/api/memories", json=memory_data)
-    created_memory = create_response.json()
-    memory_id = created_memory["id"]
-    
-    # Then retrieve it
+    memory_id = create_response.json()["id"]
+
     response = client.get(f"/api/memories/{memory_id}")
     assert response.status_code == 200
-    retrieved_memory = response.json()
-    assert retrieved_memory["id"] == memory_id
-    assert retrieved_memory["title"] == memory_data["title"]
+    retrieved = response.json()
+    assert retrieved["id"] == memory_id
+    assert retrieved["title"] == memory_data["title"]
 
 def test_update_memory():
-    # First create a memory
     memory_data = {
         "title": "Memory to Update",
         "description": "Original description",
@@ -70,27 +63,23 @@ def test_update_memory():
         "tags": ["update", "test"],
         "location": "Original Location"
     }
-    create_response = client.post("/api/memories", json=memory_data)
-    created_memory = create_response.json()
-    memory_id = created_memory["id"]
-    
-    # Then update it
+    created = client.post("/api/memories", json=memory_data).json()
+    memory_id = created["id"]
+
     update_data = {
         "title": "Updated Memory Title",
         "description": "Updated description"
     }
-    update_response = client.put(f"/api/memories/{memory_id}", json=update_data)
-    assert update_response.status_code == 200
-    updated_memory = update_response.json()
-    assert updated_memory["title"] == update_data["title"]
-    assert updated_memory["description"] == update_data["description"]
-    # Other fields should remain unchanged
-    assert updated_memory["date"] == memory_data["date"]
-    assert updated_memory["tags"] == memory_data["tags"]
-    assert updated_memory["location"] == memory_data["location"]
+    response = client.put(f"/api/memories/{memory_id}", json=update_data)
+    assert response.status_code == 200
+    updated = response.json()
+    assert updated["title"] == update_data["title"]
+    assert updated["description"] == update_data["description"]
+    assert updated["date"] == memory_data["date"]
+    assert updated["tags"] == memory_data["tags"]
+    assert updated["location"] == memory_data["location"]
 
 def test_delete_memory():
-    # First create a memory
     memory_data = {
         "title": "Memory to Delete",
         "description": "This memory will be deleted",
@@ -98,18 +87,16 @@ def test_delete_memory():
         "tags": ["delete", "test"],
         "location": "Delete Location"
     }
-    create_response = client.post("/api/memories", json=memory_data)
-    created_memory = create_response.json()
-    memory_id = created_memory["id"]
-    
-    # Then delete it
-    delete_response = client.delete(f"/api/memories/{memory_id}")
-    assert delete_response.status_code == 200
-    delete_result = delete_response.json()
-    assert "message" in delete_result
-    assert "deleted_memory" in delete_result
-    
-    # Verify it's deleted
+    created = client.post("/api/memories", json=memory_data).json()
+    memory_id = created["id"]
+
+    response = client.delete(f"/api/memories/{memory_id}")
+    assert response.status_code == 200
+    result = response.json()
+    assert "message" in result
+    assert "deleted_memory" in result
+
+    # Confirm deletion
     get_response = client.get(f"/api/memories/{memory_id}")
     assert get_response.status_code == 404
 
@@ -118,49 +105,85 @@ def test_get_nonexistent_memory():
     assert response.status_code == 404
 
 def test_update_nonexistent_memory():
-    update_data = {"title": "Updated Title"}
-    response = client.put("/api/memories/99999", json=update_data)
+    response = client.put("/api/memories/99999", json={"title": "Updated Title"})
     assert response.status_code == 404
 
 def test_delete_nonexistent_memory():
     response = client.delete("/api/memories/99999")
     assert response.status_code == 404
 
+def test_filter_memories_by_tags():
+    memories = [
+        {"title": "Family Vacation", "description": "Trip to the beach", "date": "2024-06-15", "tags": ["family", "vacation", "beach"], "location": "Beach Resort"},
+        {"title": "Birthday Party", "description": "John's birthday", "date": "2024-07-20", "tags": ["birthday", "celebration"], "location": "Home"},
+        {"title": "Work Conference", "description": "Annual work meeting", "date": "2024-08-10", "tags": ["work", "conference"], "location": "Office"},
+    ]
+    for m in memories:
+        client.post("/api/memories", json=m)
+
+    response = client.get("/api/memories?tags=family")
+    assert response.status_code == 200
+    assert any("family" in m.get("tags", []) for m in response.json()["memories"])
+
+    response = client.get("/api/memories?tags=birthday&tags=vacation")
+    assert response.status_code == 200
+    assert any(tag in m.get("tags", []) for m in response.json()["memories"] for tag in ["birthday", "vacation"])
+
+def test_filter_memories_by_location():
+    response = client.get("/api/memories?location=home")
+    assert response.status_code == 200
+    for m in response.json()["memories"]:
+        assert "home" in m.get("location", "").lower()
+
+    response = client.get("/api/memories?location=Beach")
+    assert response.status_code == 200
+    for m in response.json()["memories"]:
+        assert "beach" in m.get("location", "").lower()
+
+def test_filter_memories_by_date_range():
+    response = client.get("/api/memories?date_from=2024-07-01")
+    assert response.status_code == 200
+    for m in response.json()["memories"]:
+        assert m["date"] >= "2024-07-01"
+
+    response = client.get("/api/memories?date_from=2024-06-01&date_to=2024-07-31")
+    assert response.status_code == 200
+    for m in response.json()["memories"]:
+        assert "2024-06-01" <= m["date"] <= "2024-07-31"
+
+def test_filter_memories_invalid_date():
+    response = client.get("/api/memories?date_from=invalid-date")
+    assert response.status_code == 400
+
+    response = client.get("/api/memories?date_to=invalid-date")
+    assert response.status_code == 400
+
+def test_filter_memories_combined():
+    response = client.get("/api/memories?tags=family&location=beach&date_from=2024-06-01")
+    assert response.status_code == 200
+    for m in response.json()["memories"]:
+        assert "family" in m.get("tags", [])
+        assert "beach" in m.get("location", "").lower()
+        assert m["date"] >= "2024-06-01"
+
 def test_create_memory_validation():
-    """Test validation for memory creation"""
-    # Test empty title
-    response = client.post("/api/memories", json={
-        "title": "",
-        "description": "Valid description",
-        "date": "2024-01-01"
-    })
+    # Empty title
+    response = client.post("/api/memories", json={"title": "", "description": "Valid", "date": "2024-01-01"})
     assert response.status_code == 422
-    
-    # Test empty description
-    response = client.post("/api/memories", json={
-        "title": "Valid title",
-        "description": "",
-        "date": "2024-01-01"
-    })
+
+    # Empty description
+    response = client.post("/api/memories", json={"title": "Valid", "description": "", "date": "2024-01-01"})
     assert response.status_code == 422
-    
-    # Test invalid date format
-    response = client.post("/api/memories", json={
-        "title": "Valid title",
-        "description": "Valid description",
-        "date": "invalid-date"
-    })
+
+    # Invalid date
+    response = client.post("/api/memories", json={"title": "Valid", "description": "Valid", "date": "invalid-date"})
     assert response.status_code == 422
-    
-    # Test title too long
-    response = client.post("/api/memories", json={
-        "title": "x" * 201,
-        "description": "Valid description",
-        "date": "2024-01-01"
-    })
+
+    # Too long title
+    response = client.post("/api/memories", json={"title": "x" * 201, "description": "Valid", "date": "2024-01-01"})
     assert response.status_code == 422
-    
-    # Test valid data with all fields
+
+    # Valid memory
     response = client.post("/api/memories", json={
         "title": "Valid Memory",
         "description": "A valid memory description",

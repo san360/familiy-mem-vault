@@ -1,4 +1,6 @@
-.vscode/mcp.json# Dependencies
+.vscode/mcp.json
+
+# Dependencies
 node_modules/
 __pycache__/
 *.pyc
@@ -31,6 +33,9 @@ pids/
 *.pid
 *.seed
 *.pid.lock
+
+# Test data artifacts
+data/memories.json
 
 # Coverage directory used by tools like istanbul
 coverage/

@@ -1,8 +1,29 @@
 const API_BASE_URL = 'http://localhost:8000'
 
 const api = {
-  async getMemories() {
-    const response = await fetch(`${API_BASE_URL}/api/memories`)
+  async getMemories(filters = {}) {
+    const params = new URLSearchParams()
+    
+    if (filters.tags && filters.tags.length > 0) {
+      filters.tags.forEach(tag => params.append('tags', tag))
+    }
+    
+    if (filters.location) {
+      params.append('location', filters.location)
+    }
+    
+    if (filters.date_from) {
+      params.append('date_from', filters.date_from)
+    }
+    
+    if (filters.date_to) {
+      params.append('date_to', filters.date_to)
+    }
+    
+    const queryString = params.toString()
+    const url = `${API_BASE_URL}/api/memories${queryString ? `?${queryString}` : ''}`
+    
+    const response = await fetch(url)
     if (!response.ok) {
       throw new Error('Failed to fetch memories')
     }
