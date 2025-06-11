@@ -61,19 +61,6 @@
         "test"
       ],
       "location": "Original Location"
-    },
-    {
-      "id": 6,
-      "title": "API Test Memory",
-      "description": "Testing the API directly",
-      "date": "2024-01-15",
-      "photos": [],
-      "tags": [
-        "api",
-        "test",
-        "frontend"
-      ],
-      "location": "Development Environment"
     }
   ]
 }
