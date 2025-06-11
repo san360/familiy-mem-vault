@@ -6,7 +6,11 @@
       "description": "Our amazing trip to the mountains with the whole family.",
       "date": "2024-07-15",
       "photos": [],
-      "tags": ["vacation", "family", "mountains"],
+      "tags": [
+        "vacation",
+        "family",
+        "mountains"
+      ],
       "location": "Rocky Mountains, Colorado"
     },
     {
@@ -15,8 +19,48 @@
       "description": "Mom's 60th birthday party with all the relatives.",
       "date": "2024-03-22",
       "photos": [],
-      "tags": ["birthday", "celebration", "family"],
+      "tags": [
+        "birthday",
+        "celebration",
+        "family"
+      ],
       "location": "Home"
+    },
+    {
+      "id": 3,
+      "title": "Test Memory",
+      "description": "This is a test memory",
+      "date": "2024-01-01",
+      "photos": [],
+      "tags": [
+        "test",
+        "memory"
+      ],
+      "location": "Test Location"
+    },
+    {
+      "id": 4,
+      "title": "Single Test Memory",
+      "description": "Testing single memory retrieval",
+      "date": "2024-01-02",
+      "photos": [],
+      "tags": [
+        "single",
+        "test"
+      ],
+      "location": "Single Test Location"
+    },
+    {
+      "id": 5,
+      "title": "Updated Memory Title",
+      "description": "Updated description",
+      "date": "2024-01-03",
+      "photos": [],
+      "tags": [
+        "update",
+        "test"
+      ],
+      "location": "Original Location"
     }
   ]
 }
