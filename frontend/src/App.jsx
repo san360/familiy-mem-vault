@@ -3,6 +3,7 @@ import './App.css'
 import MemoryForm from './components/MemoryForm'
 import MemoryCard from './components/MemoryCard'
 import FilterPanel from './components/FilterPanel'
+import DeleteConfirmModal from './components/DeleteConfirmModal'
 import api from './utils/api'
 
 function App() {
@@ -13,6 +14,9 @@ function App() {
   const [error, setError] = useState('')
   const [filters, setFilters] = useState({})
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [memoryToDelete, setMemoryToDelete] = useState(null)
 
   const fetchMemories = useCallback(async (appliedFilters = {}) => {
     try {
@@ -38,7 +42,7 @@ function App() {
 
   const handleAddMemory = async (memoryData) => {
     try {
-      const newMemory = await api.createMemory(memoryData)
+      await api.createMemory(memoryData)
       setCurrentView('list')
       setError('')
       // Refresh memories with current filters to show updated results
@@ -65,12 +69,32 @@ function App() {
     try {
       await api.deleteMemory(memoryId)
       setError('')
+      setDeleteModalOpen(false)
+      setMemoryToDelete(null)
       // Refresh memories with current filters to show updated results
       fetchMemories(filters)
     } catch (err) {
       console.error('Failed to delete memory:', err)
       setError('Failed to delete memory. Please try again.')
+      setDeleteModalOpen(false)
+      setMemoryToDelete(null)
     }
+  }
+
+  const confirmDelete = (memory) => {
+    setMemoryToDelete(memory)
+    setDeleteModalOpen(true)
+  }
+
+  const handleDeleteConfirm = () => {
+    if (memoryToDelete) {
+      handleDeleteMemory(memoryToDelete.id)
+    }
+  }
+
+  const handleDeleteCancel = () => {
+    setDeleteModalOpen(false)
+    setMemoryToDelete(null)
   }
 
   const startEdit = (memory) => {
@@ -110,19 +134,43 @@ function App() {
         <main>
           {currentView === 'list' && (
             <>
-              <div className="mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <button
-                  onClick={() => setCurrentView('add')}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center space-x-2"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  <span>Add New Memory</span>
-                </button>
-                
-                <div className="text-sm text-gray-600">
-                  {loading ? 'Loading...' : `${memories.length} memories found`}
+              <div className="mb-6 flex flex-col gap-4">
+                {/* Search Bar */}
+                <div className="max-w-2xl mx-auto w-full px-2 sm:px-0">
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="text"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base sm:text-lg"
+                      placeholder="Search your memories..."
+                    />
+                  </div>
+                </div>
+
+                {/* Action Bar */}
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-2 sm:px-0">
+                  <button
+                    onClick={() => setCurrentView('add')}
+                    className="w-full sm:w-auto bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center justify-center space-x-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>Add New Memory</span>
+                  </button>
+                  
+                  <div className="text-sm text-gray-600">
+                    {loading ? 'Loading...' : `${memories.filter(memory => 
+                      memory.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      memory.description.toLowerCase().includes(searchTerm.toLowerCase())
+                    ).length} memories found`}
+                  </div>
                 </div>
               </div>
 
@@ -137,34 +185,44 @@ function App() {
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
                   <p className="mt-4 text-gray-600">Loading memories...</p>
                 </div>
-              ) : memories.length === 0 ? (
+              ) : memories.filter(memory => 
+                memory.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                memory.description.toLowerCase().includes(searchTerm.toLowerCase())
+              ).length === 0 ? (
                 <div className="text-center py-12">
                   <div className="max-w-md mx-auto">
                     <svg className="w-24 h-24 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                     <p className="text-gray-500 text-lg mb-2">
-                      {Object.values(filters).some(f => f && (Array.isArray(f) ? f.length > 0 : true)) 
-                        ? 'No memories match your filters' 
-                        : 'No memories yet!'
+                      {searchTerm ? 'No memories match your search' : 
+                        (Object.values(filters).some(f => f && (Array.isArray(f) ? f.length > 0 : true)) 
+                          ? 'No memories match your filters' 
+                          : 'No memories yet!'
+                        )
                       }
                     </p>
                     <p className="text-gray-400">
-                      {Object.values(filters).some(f => f && (Array.isArray(f) ? f.length > 0 : true))
-                        ? 'Try adjusting your filters to see more results.'
-                        : 'Start by adding your first family memory.'
+                      {searchTerm ? 'Try adjusting your search terms.' :
+                        (Object.values(filters).some(f => f && (Array.isArray(f) ? f.length > 0 : true))
+                          ? 'Try adjusting your filters to see more results.'
+                          : 'Start by adding your first family memory.'
+                        )
                       }
                     </p>
                   </div>
                 </div>
               ) : (
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {memories.map(memory => (
+                <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-2 sm:px-0">
+                  {memories.filter(memory => 
+                    memory.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    memory.description.toLowerCase().includes(searchTerm.toLowerCase())
+                  ).map(memory => (
                     <MemoryCard
                       key={memory.id}
                       memory={memory}
                       onEdit={startEdit}
-                      onDelete={handleDeleteMemory}
+                      onDelete={confirmDelete}
                     />
                   ))}
                 </div>
@@ -187,6 +245,13 @@ function App() {
             />
           )}
         </main>
+
+        <DeleteConfirmModal
+          isOpen={deleteModalOpen}
+          memory={memoryToDelete}
+          onConfirm={handleDeleteConfirm}
+          onCancel={handleDeleteCancel}
+        />
       </div>
     </div>
   )

@@ -128,22 +128,37 @@ const FilterPanel = ({ onFiltersChange, isOpen, onToggle }) => {
               />
               {filters.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
-                  {filters.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
-                    >
-                      {tag}
-                      <button
-                        onClick={() => removeTag(tag)}
-                        className="ml-2 text-blue-600 hover:text-blue-800"
+                  {filters.tags.map((tag, index) => {
+                    // Create colorful pills with different colors based on tag hash
+                    const colors = [
+                      'bg-blue-100 text-blue-800',
+                      'bg-green-100 text-green-800',
+                      'bg-purple-100 text-purple-800',
+                      'bg-yellow-100 text-yellow-800',
+                      'bg-pink-100 text-pink-800',
+                      'bg-indigo-100 text-indigo-800',
+                      'bg-red-100 text-red-800',
+                      'bg-orange-100 text-orange-800'
+                    ]
+                    const colorIndex = tag.length % colors.length
+                    
+                    return (
+                      <span
+                        key={index}
+                        className={`inline-flex items-center px-3 py-1 ${colors[colorIndex]} text-sm rounded-full font-medium`}
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </span>
-                  ))}
+                        {tag}
+                        <button
+                          onClick={() => removeTag(tag)}
+                          className="ml-2 text-current hover:text-current opacity-70 hover:opacity-100 transition-opacity"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </span>
+                    )
+                  })}
                 </div>
               )}
             </div>
