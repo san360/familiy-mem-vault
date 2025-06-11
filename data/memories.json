@@ -107,8 +107,6 @@
       "photos": [],
       "tags": ["family", "vacation", "beach"],
       "location": "Beach Resort"
-    },
-    {
-      "id": 13,
-      "title": "Birthday Party",
-      "description ​:contentReference[oaicite:0]{index=0}​
+    }
+  ]
+}
