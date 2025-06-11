@@ -7,7 +7,6 @@ import json
 import tempfile
 from pathlib import Path
 from datetime import datetime
-import re
 
 app = FastAPI(
     title="Family Memory Vault API",
@@ -18,8 +17,11 @@ app = FastAPI(
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000",
-                   "http://localhost:5173"],  # React dev servers
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "https://solid-robot-5pgrgw5jv7c4wwr-8000.app.github.dev"
+    ],  # Explicitly added Codespace URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -42,14 +44,21 @@ class MemoryCreate(BaseModel):
 
 class MemoryUpdate(BaseModel):
     title: Optional[str] = Field(
-        None, min_length=1, max_length=200, description="Memory title")
+        None, min_length=1, max_length=200, description="Memory title"
+    )
     description: Optional[str] = Field(
-        None, min_length=1, max_length=2000, description="Memory description")
+        None, min_length=1, max_length=2000, description="Memory description"
+    )
     date: Optional[str] = Field(
-        None, pattern=r'^\d{4}-\d{2}-\d{2}$', description="Date in YYYY-MM-DD format")
-    tags: Optional[List[str]] = Field(None, description="List of tags")
+        None, pattern=r'^\d{4}-\d{2}-\d{2}$',
+        description="Date in YYYY-MM-DD format"
+    )
+    tags: Optional[List[str]] = Field(
+        None, description="List of tags"
+    )
     location: Optional[str] = Field(
-        None, max_length=200, description="Memory location")
+        None, max_length=200, description="Memory location"
+    )
 
 
 class Memory(BaseModel):
@@ -67,7 +76,7 @@ def load_memories():
     data_path = Path(__file__).parent.parent / "data" / "memories.json"
     if not data_path.exists():
         return {"memories": []}
-    
+
     try:
         with open(data_path, "r") as f:
             data = json.load(f)
@@ -86,11 +95,11 @@ def save_memories(data):
     """Save memories to JSON file with atomic write operation"""
     data_path = Path(__file__).parent.parent / "data" / "memories.json"
     data_path.parent.mkdir(exist_ok=True)
-    
+
     # Write to temporary file first, then atomically move to target
     with tempfile.NamedTemporaryFile(
-        mode='w', 
-        dir=data_path.parent, 
+        mode='w',
+        dir=data_path.parent,
         delete=False,
         suffix='.tmp'
     ) as tmp_file:
@@ -98,7 +107,7 @@ def save_memories(data):
         tmp_file.flush()
         os.fsync(tmp_file.fileno())  # Ensure data is written to disk
         temp_path = tmp_file.name
-    
+
     # Atomically move temp file to target location
     os.replace(temp_path, data_path)
 
@@ -149,7 +158,9 @@ async def get_memories(
                 m["date"], "%Y-%m-%d").date() >= from_date]
         except ValueError:
             raise HTTPException(
-                status_code=400, detail="Invalid date_from format. Use YYYY-MM-DD")
+                status_code=400,
+                detail="Invalid date_from format. Use YYYY-MM-DD"
+            )
 
     if date_to:
         try:
@@ -158,7 +169,9 @@ async def get_memories(
                 m["date"], "%Y-%m-%d").date() <= to_date]
         except ValueError:
             raise HTTPException(
-                status_code=400, detail="Invalid date_to format. Use YYYY-MM-DD")
+                status_code=400,
+                detail="Invalid date_to format. Use YYYY-MM-DD"
+            )
 
     return {"memories": memories}
 
@@ -224,7 +237,10 @@ async def delete_memory(memory_id: int):
 
     deleted_memory = data["memories"].pop(memory_index)
     save_memories(data)
-    return {"message": "Memory deleted successfully", "deleted_memory": deleted_memory}
+    return {
+        "message": "Memory deleted successfully",
+        "deleted_memory": deleted_memory
+    }
 
 if __name__ == "__main__":
     import uvicorn
