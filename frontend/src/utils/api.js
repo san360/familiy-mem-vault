@@ -1,4 +1,23 @@
-const API_BASE_URL = 'http://localhost:8000'
+// Use environment variable, or detect if we're in Codespace and use appropriate URL
+const getApiBaseUrl = () => {
+  // Check for explicit environment variable
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  
+  // Check if we're in a Codespace by looking at the hostname
+  if (typeof window !== 'undefined' && window.location.hostname.includes('app.github.dev')) {
+    // Extract the Codespace name from current URL and use port 8000
+    const hostname = window.location.hostname;
+    const codespaceUrl = hostname.replace('-5173', '-8000').replace('-5175', '-8000');
+    return `https://${codespaceUrl}`;
+  }
+  
+  // Default to localhost for local development
+  return 'http://localhost:8000';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 const api = {
   async getMemories(filters = {}) {

@@ -1,9 +1,7 @@
-import { useState, useEffect, useCallback } from 'react'
-import './App.css'
-import MemoryForm from './components/MemoryForm'
-import MemoryCard from './components/MemoryCard'
-import FilterPanel from './components/FilterPanel'
+import { useCallback, useEffect, useState } from 'react'
 import DeleteConfirmModal from './components/DeleteConfirmModal'
+import MemoryCard from './components/MemoryCard'
+import MemoryForm from './components/MemoryForm'
 import api from './utils/api'
 
 function App() {
@@ -12,8 +10,7 @@ function App() {
   const [currentView, setCurrentView] = useState('list') // 'list', 'add', 'edit'
   const [editingMemory, setEditingMemory] = useState(null)
   const [error, setError] = useState('')
-  const [filters, setFilters] = useState({})
-  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [filters] = useState({})
   const [searchTerm, setSearchTerm] = useState('')
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [memoryToDelete, setMemoryToDelete] = useState(null)
@@ -33,11 +30,6 @@ function App() {
 
   useEffect(() => {
     fetchMemories()
-  }, [fetchMemories])
-
-  const handleFiltersChange = useCallback((newFilters) => {
-    setFilters(newFilters)
-    fetchMemories(newFilters)
   }, [fetchMemories])
 
   const handleAddMemory = async (memoryData) => {
@@ -108,15 +100,31 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-4 px-4 sm:py-8">
-      <div className="max-w-7xl mx-auto">
-        <header className="text-center mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
-            Family Memory Vault
-          </h1>
-          <p className="text-base sm:text-lg text-gray-600">
-            Preserve and share your precious family memories
-          </p>
+    <div className="min-h-screen bg-gradient-to-b from-purple-100 via-white to-blue-100 py-0 px-0 sm:py-4 sm:px-4 flex flex-col items-center">
+      <div className="w-full max-w-md sm:max-w-3xl md:max-w-5xl mx-auto">
+        {/* Header */}
+        <header className="flex items-center justify-between px-6 py-6 sm:py-8 bg-white bg-opacity-90 rounded-b-3xl shadow-lg mb-8">
+          <div className="flex items-center gap-3">
+            <div className="bg-purple-200 rounded-xl p-2">
+              <svg className="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <rect x="4" y="4" width="16" height="16" rx="4" strokeWidth="2" />
+                <circle cx="12" cy="12" r="3" strokeWidth="2" />
+              </svg>
+            </div>
+            <div>
+              <span className="block text-xl sm:text-2xl font-bold text-gray-900 leading-tight">Family</span>
+              <span className="block text-lg sm:text-xl font-semibold text-gray-700 -mt-1">Memory Vault</span>
+            </div>
+          </div>
+          <nav className="flex items-center gap-6">
+            <span className="text-purple-700 font-semibold text-lg cursor-pointer border-b-2 border-purple-600 pb-1">Memories</span>
+            <button
+              onClick={() => setCurrentView('add')}
+              className="text-gray-700 hover:text-purple-700 font-medium text-lg focus:outline-none"
+            >
+              Add Memory
+            </button>
+          </nav>
         </header>
 
         {error && (
@@ -134,8 +142,8 @@ function App() {
         <main>
           {currentView === 'list' && (
             <>
+              {/* Search Bar */}
               <div className="mb-6 flex flex-col gap-4">
-                {/* Search Bar */}
                 <div className="max-w-2xl mx-auto w-full px-2 sm:px-0">
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -147,42 +155,17 @@ function App() {
                       type="text"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base sm:text-lg"
-                      placeholder="Search your memories..."
+                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-base sm:text-lg shadow-sm"
+                      placeholder="Search..."
                     />
-                  </div>
-                </div>
-
-                {/* Action Bar */}
-                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-2 sm:px-0">
-                  <button
-                    onClick={() => setCurrentView('add')}
-                    className="w-full sm:w-auto bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center justify-center space-x-2"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    <span>Add New Memory</span>
-                  </button>
-                  
-                  <div className="text-sm text-gray-600">
-                    {loading ? 'Loading...' : `${memories.filter(memory => 
-                      memory.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                      memory.description.toLowerCase().includes(searchTerm.toLowerCase())
-                    ).length} memories found`}
                   </div>
                 </div>
               </div>
 
-              <FilterPanel 
-                onFiltersChange={handleFiltersChange}
-                isOpen={filtersOpen}
-                onToggle={() => setFiltersOpen(!filtersOpen)}
-              />
-
+              {/* Memories Grid */}
               {loading ? (
                 <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
                   <p className="mt-4 text-gray-600">Loading memories...</p>
                 </div>
               ) : memories.filter(memory => 
@@ -213,7 +196,7 @@ function App() {
                   </div>
                 </div>
               ) : (
-                <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-2 sm:px-0">
+                <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-2 sm:px-0">
                   {memories.filter(memory => 
                     memory.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                     memory.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -227,6 +210,16 @@ function App() {
                   ))}
                 </div>
               )}
+
+              {/* Add Memory Button (fixed at bottom) */}
+              <div className="fixed bottom-6 left-0 w-full flex justify-center z-50 pointer-events-none">
+                <button
+                  onClick={() => setCurrentView('add')}
+                  className="pointer-events-auto bg-gradient-to-r from-purple-500 to-blue-400 hover:from-purple-600 hover:to-blue-500 text-white text-lg font-semibold px-10 py-4 rounded-full shadow-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 transition-colors"
+                >
+                  Add Memory
+                </button>
+              </div>
             </>
           )}
 
