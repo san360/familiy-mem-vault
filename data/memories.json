@@ -11,20 +11,8 @@
         "family",
         "mountains"
       ],
-      "location": "Rocky Mountains, Colorado"
-    },
-    {
-      "id": 2,
-      "title": "Birthday Celebration",
-      "description": "Mom's 60th birthday party with all the relatives.",
-      "date": "2024-03-22",
-      "photos": [],
-      "tags": [
-        "birthday",
-        "celebration",
-        "family"
-      ],
-      "location": "Home"
+      "location": "Rocky Mountains, Colorado",
+      "imageUrl": "https://fastly.picsum.photos/id/168/200/200.jpg?hmac=VxnpUGg87Q47YRONmdsU2vNGSPjCs5vrwiAL-0hEIHM"
     },
     {
       "id": 3,
@@ -836,6 +824,42 @@
         "third"
       ],
       "location": "Location 3"
+    },
+    {
+      "id": 70,
+      "title": "Test Image Memory",
+      "description": "Testing the new image URL functionality with a sample image",
+      "date": "2025-06-12",
+      "photos": [],
+      "tags": [
+        "test",
+        "image"
+      ],
+      "location": "Development Environment"
+    },
+    {
+      "id": 71,
+      "title": "Test Image Memory",
+      "description": "Testing the new image URL functionality with a sample image",
+      "date": "2025-06-12",
+      "photos": [],
+      "tags": [
+        "test",
+        "image"
+      ],
+      "location": "Development Environment"
+    },
+    {
+      "id": 72,
+      "title": "Test Image Memory",
+      "description": "Testing the new image URL functionality with a sample image",
+      "date": "2025-06-12",
+      "photos": [],
+      "tags": [
+        "test",
+        "image"
+      ],
+      "location": "Development Environment"
     }
   ]
 }

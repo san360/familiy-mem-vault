@@ -32,6 +32,7 @@ app = FastAPI(
 cors_origins = [
     "http://localhost:3000",
     "http://localhost:5173",
+    "http://localhost:5174",
     "http://localhost:5175",
     "https://solid-robot-5pgrgw5jv7c4wwr-8000.app.github.dev",
     "https://solid-robot-5pgrgw5jv7c4wwr-5173.app.github.dev",
@@ -81,6 +82,8 @@ class MemoryCreate(BaseModel):
     tags: List[str] = Field(default=[], description="List of tags")
     location: str = Field(default="", max_length=200,
                           description="Memory location")
+    imageUrl: str = Field(default="", max_length=500,
+                          description="URL of the memory image")
 
 
 class MemoryUpdate(BaseModel):
@@ -100,6 +103,9 @@ class MemoryUpdate(BaseModel):
     location: Optional[str] = Field(
         None, max_length=200, description="Memory location"
     )
+    imageUrl: Optional[str] = Field(
+        None, max_length=500, description="URL of the memory image"
+    )
 
 
 class Memory(BaseModel):
@@ -110,6 +116,7 @@ class Memory(BaseModel):
     photos: List[str] = []
     tags: List[str] = []
     location: str = ""
+    imageUrl: str = ""
 
 
 def load_memories():
@@ -352,6 +359,6 @@ async def shutdown_event():
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.environ.get("PORT", 8000))
+    port = int(os.environ.get("PORT", 8080))
     logger.info(f"Starting server on host=0.0.0.0, port={port}")
     uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
