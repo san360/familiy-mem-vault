@@ -56,3 +56,7 @@ build/
 
 # Azure
 .azure/
+
+# Include .vscode folder and mcp.json file
+!.vscode/
+!.vscode/mcp.json
