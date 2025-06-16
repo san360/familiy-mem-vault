@@ -33,7 +33,7 @@
   "postCreateCommand": "cd backend && pip install -r requirements.txt && cd ../frontend && npm install",
   "remoteUser": "vscode",
   "features": {
-    // "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     // "ghcr.io/devcontainers/features/python:1": {"installPython": "3.11","installPip": true},
     "ghcr.io/devcontainers/features/node:1": {
       "version": "latest",
