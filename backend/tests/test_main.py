@@ -200,6 +200,47 @@ def test_create_memory_validation():
     assert memory["title"] == "Valid Memory"
     assert memory["tags"] == ["validation", "test"]
 
+def test_create_memory_with_image_url():
+    """Test creating a memory with an image URL"""
+    memory_data = {
+        "title": "Memory with Image",
+        "description": "This memory has an image",
+        "date": "2024-06-01",
+        "tags": ["image", "test"],
+        "location": "Photo Location",
+        "imageUrl": "https://example.com/image.jpg"
+    }
+    response = client.post("/api/memories", json=memory_data)
+    assert response.status_code == 200
+    created_memory = response.json()
+    assert created_memory["title"] == memory_data["title"]
+    assert created_memory["imageUrl"] == memory_data["imageUrl"]
+
+def test_update_memory_image_url():
+    """Test updating a memory's image URL"""
+    # Create a memory without image URL
+    memory_data = {
+        "title": "Memory to Update Image",
+        "description": "Original description",
+        "date": "2024-06-02",
+        "tags": ["update", "test"],
+        "location": "Original Location"
+    }
+    created = client.post("/api/memories", json=memory_data).json()
+    memory_id = created["id"]
+
+    # Update with image URL
+    update_data = {
+        "imageUrl": "https://example.com/updated-image.jpg"
+    }
+    response = client.put(f"/api/memories/{memory_id}", json=update_data)
+    assert response.status_code == 200
+    updated = response.json()
+    assert updated["imageUrl"] == update_data["imageUrl"]
+    # Other fields should remain unchanged
+    assert updated["title"] == memory_data["title"]
+    assert updated["description"] == memory_data["description"]
+
 def test_load_memories_empty_file():
     """Test that load_memories handles empty files correctly"""
     # Create temporary empty file

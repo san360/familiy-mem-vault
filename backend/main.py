@@ -278,7 +278,8 @@ async def create_memory(memory: MemoryCreate):
         "date": memory.date,
         "photos": [],
         "tags": memory.tags,
-        "location": memory.location
+        "location": memory.location,
+        "imageUrl": memory.imageUrl
     }
     data["memories"].append(new_memory)
     save_memories(data)
@@ -315,6 +316,9 @@ async def update_memory(memory_id: int, memory_update: MemoryUpdate):
     if memory_update.location is not None:
         memory["location"] = memory_update.location
         updated_fields.append("location")
+    if memory_update.imageUrl is not None:
+        memory["imageUrl"] = memory_update.imageUrl
+        updated_fields.append("imageUrl")
 
     save_memories(data)
     logger.info(
