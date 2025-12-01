@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from main import app, load_memories, save_memories
+from main import app, load_memories, save_memories, normalize_memory
 from pathlib import Path
 import json
 import tempfile
@@ -200,6 +200,47 @@ def test_create_memory_validation():
     assert memory["title"] == "Valid Memory"
     assert memory["tags"] == ["validation", "test"]
 
+def test_create_memory_with_image_url():
+    """Test creating a memory with an image URL"""
+    memory_data = {
+        "title": "Memory with Image",
+        "description": "This memory has an image",
+        "date": "2024-06-01",
+        "tags": ["image", "test"],
+        "location": "Photo Location",
+        "imageUrl": "https://example.com/image.jpg"
+    }
+    response = client.post("/api/memories", json=memory_data)
+    assert response.status_code == 200
+    created_memory = response.json()
+    assert created_memory["title"] == memory_data["title"]
+    assert created_memory["imageUrl"] == memory_data["imageUrl"]
+
+def test_update_memory_image_url():
+    """Test updating a memory's image URL"""
+    # Create a memory without image URL
+    memory_data = {
+        "title": "Memory to Update Image",
+        "description": "Original description",
+        "date": "2024-06-02",
+        "tags": ["update", "test"],
+        "location": "Original Location"
+    }
+    created = client.post("/api/memories", json=memory_data).json()
+    memory_id = created["id"]
+
+    # Update with image URL
+    update_data = {
+        "imageUrl": "https://example.com/updated-image.jpg"
+    }
+    response = client.put(f"/api/memories/{memory_id}", json=update_data)
+    assert response.status_code == 200
+    updated = response.json()
+    assert updated["imageUrl"] == update_data["imageUrl"]
+    # Other fields should remain unchanged
+    assert updated["title"] == memory_data["title"]
+    assert updated["description"] == memory_data["description"]
+
 def test_load_memories_empty_file():
     """Test that load_memories handles empty files correctly"""
     # Create temporary empty file
@@ -398,3 +439,47 @@ def test_path_resolution_from_different_working_directory():
     finally:
         # Always restore the original working directory
         os.chdir(original_cwd)
+
+
+def test_normalize_memory_adds_missing_fields():
+    """Test that normalize_memory adds missing fields with default values"""
+    # Memory without imageUrl field
+    incomplete_memory = {
+        "id": 1,
+        "title": "Test",
+        "description": "Test description",
+        "date": "2024-01-01"
+    }
+    
+    normalized = normalize_memory(incomplete_memory)
+    
+    # Should have all required fields with defaults
+    assert normalized["imageUrl"] == ""
+    assert normalized["photos"] == []
+    assert normalized["tags"] == []
+    assert normalized["location"] == ""
+    # Original fields should be preserved
+    assert normalized["id"] == 1
+    assert normalized["title"] == "Test"
+
+def test_normalize_memory_preserves_existing_fields():
+    """Test that normalize_memory preserves existing field values"""
+    complete_memory = {
+        "id": 1,
+        "title": "Test",
+        "description": "Test description",
+        "date": "2024-01-01",
+        "imageUrl": "https://example.com/image.jpg",
+        "photos": ["photo1.jpg"],
+        "tags": ["tag1", "tag2"],
+        "location": "Test Location"
+    }
+    
+    normalized = normalize_memory(complete_memory)
+    
+    # All existing values should be preserved
+    assert normalized["imageUrl"] == "https://example.com/image.jpg"
+    assert normalized["photos"] == ["photo1.jpg"]
+    assert normalized["tags"] == ["tag1", "tag2"]
+    assert normalized["location"] == "Test Location"
+
