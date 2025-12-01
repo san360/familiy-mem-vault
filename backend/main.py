@@ -119,6 +119,20 @@ class Memory(BaseModel):
     imageUrl: str = ""
 
 
+def normalize_memory(memory: dict) -> dict:
+    """Ensure memory has all required fields with default values"""
+    defaults = {
+        "photos": [],
+        "tags": [],
+        "location": "",
+        "imageUrl": ""
+    }
+    for key, default_value in defaults.items():
+        if key not in memory:
+            memory[key] = default_value
+    return memory
+
+
 def load_memories():
     """Load memories from JSON file"""
     data_path = Path(__file__).parent.parent / "data" / "memories.json"
@@ -140,6 +154,9 @@ def load_memories():
                 logger.error(
                     "Invalid JSON structure: 'memories' is not a list")
                 return {"memories": []}
+
+            # Normalize all memories to ensure consistent structure
+            data["memories"] = [normalize_memory(m) for m in data["memories"]]
 
             memory_count = len(data["memories"])
             logger.info(f"Successfully loaded {memory_count} memories")

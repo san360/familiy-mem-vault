@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from main import app, load_memories, save_memories
+from main import app, load_memories, save_memories, normalize_memory
 from pathlib import Path
 import json
 import tempfile
@@ -439,3 +439,47 @@ def test_path_resolution_from_different_working_directory():
     finally:
         # Always restore the original working directory
         os.chdir(original_cwd)
+
+
+def test_normalize_memory_adds_missing_fields():
+    """Test that normalize_memory adds missing fields with default values"""
+    # Memory without imageUrl field
+    incomplete_memory = {
+        "id": 1,
+        "title": "Test",
+        "description": "Test description",
+        "date": "2024-01-01"
+    }
+    
+    normalized = normalize_memory(incomplete_memory)
+    
+    # Should have all required fields with defaults
+    assert normalized["imageUrl"] == ""
+    assert normalized["photos"] == []
+    assert normalized["tags"] == []
+    assert normalized["location"] == ""
+    # Original fields should be preserved
+    assert normalized["id"] == 1
+    assert normalized["title"] == "Test"
+
+def test_normalize_memory_preserves_existing_fields():
+    """Test that normalize_memory preserves existing field values"""
+    complete_memory = {
+        "id": 1,
+        "title": "Test",
+        "description": "Test description",
+        "date": "2024-01-01",
+        "imageUrl": "https://example.com/image.jpg",
+        "photos": ["photo1.jpg"],
+        "tags": ["tag1", "tag2"],
+        "location": "Test Location"
+    }
+    
+    normalized = normalize_memory(complete_memory)
+    
+    # All existing values should be preserved
+    assert normalized["imageUrl"] == "https://example.com/image.jpg"
+    assert normalized["photos"] == ["photo1.jpg"]
+    assert normalized["tags"] == ["tag1", "tag2"]
+    assert normalized["location"] == "Test Location"
+
