@@ -107,6 +107,7 @@ azd up
 - ✅ Azure Container Apps deployment ready
 - ✅ JSON-based data storage
 - ✅ Full-stack development environment
+- 🔒 Authentication ready (see [docs/](./docs/) for implementation guides)
 
 ## API Endpoints
 
@@ -119,3 +120,15 @@ azd up
 - `PORT` - Backend server port (default: 8000)
 - `VITE_API_BASE_URL` - Frontend API base URL
 - `AZURE_LOCATION` - Azure deployment region (default: westeurope)
+
+## Documentation
+
+- **[Authentication Research](./docs/AUTHENTICATION_RESEARCH.md)** - Comprehensive analysis of authentication mechanisms
+- **[Quick Start Guide](./docs/AUTHENTICATION_QUICK_START.md)** - Fast implementation guide for Azure AD B2C
+- **[Comparison Matrix](./docs/AUTHENTICATION_COMPARISON.md)** - Side-by-side comparison of all options
+
+## Security
+
+⚠️ **Important:** This application currently has no authentication. All API endpoints are open and unprotected. 
+
+For production deployment, implement authentication following the guides in the [docs/](./docs/) directory. We recommend Azure AD B2C for this application.
