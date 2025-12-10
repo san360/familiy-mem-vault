@@ -278,7 +278,7 @@ W3C standard for passwordless authentication using public-key cryptography and b
 ### Pros
 - ✅ **Phishing-Resistant:** Credentials never transmitted
 - ✅ **Biometric Support:** Fingerprint, Face ID, device PIN
-- ✅ **Modern:** Latest security standard (2024)
+- ✅ **Modern:** W3C standard since 2019, widely adopted in 2024
 - ✅ **Platform Support:** Chrome, Safari, Firefox, Edge all support
 - ✅ **Cross-Platform:** Supported by Apple, Google, Microsoft
 
@@ -736,7 +736,7 @@ If implementing authentication for the first time:
 ### Passwordless Authentication
 
 - [Auth0 Magic Links](https://auth0.com/docs/authenticate/passwordless/authentication-methods/email-magic-link)
-- [WebAuthn Developer Guide 2025](https://blog.magicauth.app/articles/webauthn-passkeys-developer-guide-2025)
+- [WebAuthn Developer Guide](https://webauthn.guide/)
 - [Magic Link Authentication Guide](https://fpsoftware.io/blog/passwordless-authentication-with-magic-links/)
 
 ### Identity Provider Comparisons

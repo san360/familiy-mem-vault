@@ -132,10 +132,15 @@ This is a condensed guide for implementing authentication in the Family Memory V
        }
    )
    
-   # Initialize on startup
-   @app.on_event("startup")
-   async def load_azure_config():
+   # Initialize on startup using lifespan
+   from contextlib import asynccontextmanager
+   
+   @asynccontextmanager
+   async def lifespan(app: FastAPI):
        await azure_scheme.openid_config.load_config()
+       yield
+   
+   app = FastAPI(lifespan=lifespan)
    ```
 
 4. **Protect Endpoints** (`backend/main.py`)
